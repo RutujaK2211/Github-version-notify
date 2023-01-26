@@ -10,12 +10,12 @@ jobs:
 
     steps:
       - uses: actions/checkout@v3
-        #with:
+        with:
           # [Required] Access token with `workflow` scope.
-          #token: ${{ secrets.WORKFLOW_SECRET }}
+          token: ${{ secrets.WORKFLOW_SECRET }}
 
       - name: Run GitHub Actions Version Updater
         uses: RutujaK2211/Github-version-notify@main
-      #  with:
+        with:
           # [Required] Access token with `workflow` scope.
-         # token: ${{ secrets.WORKFLOW_SECRET }}
+          token: ${{ secrets.WORKFLOW_SECRET }}
