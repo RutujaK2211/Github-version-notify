@@ -25,6 +25,7 @@ from .run_git import (
 )
 from .utils import (
     add_git_diff_to_job_summary,
+    get_request_headers,
 )
 class GitHubActionsVersionUpdater:
     """Check for GitHub Action updates"""
@@ -60,13 +61,7 @@ class GitHubActionsVersionUpdater:
             )
 
         if git_has_changes():
-            
-            #else:
-             #   add_git_diff_to_job_summary()
-              #  gha_utils.error(
-               #     "Updates found but skipping pull request. "
-                #    "Checkout build summary for update details."
-                #)
+            post_message_to_slack()
         else:
             gha_utils.notice("Everything is up-to-date! \U0001F389 \U0001F389")
 
@@ -365,6 +360,16 @@ class GitHubActionsVersionUpdater:
         elif isinstance(data, list):
             for element in data:
                 yield from self._get_all_actions(element)
+                
+    def post_message_to_slack(text, blocks = None):
+    return requests.post('https://slack.com/api/chat.postMessage', {
+        'token': slack_token,
+        'channel': slack_channel,
+        'text': text,
+        'icon_emoji': slack_icon_emoji,
+        'username': slack_user_name,
+        'blocks': json.dumps(blocks) if blocks else None
+    }).json()	            
 
 
 if __name__ == "__main__":
@@ -408,5 +413,3 @@ if __name__ == "__main__":
             user_configuration,
         )
         actions_version_updater.run()
-
-    
