@@ -1,0 +1,26 @@
+name: GitHub Actions Version Notify
+description: GitHub Actions Version Notify will give notification about latest action version.
+inputs:
+  ignore:
+    description: 'A comma separated string of GitHub Actions to ignore updates for'
+    required: false
+    default: ''
+  token:
+    description: 'GitHub Personal Access Token with `workflow` scope'
+    required: true
+  update_version_with:
+    description: 'Use The Latest Release Tag/Commit SHA or Default Branch Commit SHA to update the actions. options: "release-tag" (default), "release-commit-sha", "default-branch-sha"'
+    required: false
+    default: 'release-tag'  
+  release_types:
+    description: 'A comma separated string of release types (major, minor, patch) to use when updating the actions. By default, all release types are used to update the actions. Only Applicable for "release-tag", "release-commit-sha"'
+    required: false
+    default: 'all'
+  extra_workflow_locations:
+    description: 'A comma separated string of file or directory paths to look for workflows. By default, only the workflow files in the .github/workflows directory are checked updates'
+    required: false
+    default: ''
+
+runs:
+  using: 'docker'
+  image: 'Dockerfile'
