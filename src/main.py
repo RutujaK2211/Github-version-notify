@@ -362,14 +362,14 @@ class GitHubActionsVersionUpdater:
                 yield from self._get_all_actions(element)
                 
     def post_message_to_slack(text, blocks = None):
-    return requests.post('https://slack.com/api/chat.postMessage', {
-        'token': slack_token,
-        'channel': slack_channel,
-        'text': text,
-        'icon_emoji': slack_icon_emoji,
-        'username': slack_user_name,
-        'blocks': json.dumps(blocks) if blocks else None
-    }).json()	            
+        return requests.post('https://slack.com/api/chat.postMessage', {
+            'token': slack_token,
+            'channel': slack_channel,
+            'text': text,
+            'icon_emoji': slack_icon_emoji,
+            'username': slack_user_name,
+            'blocks': json.dumps(blocks) if blocks else None
+        }).json()            
 
 
 if __name__ == "__main__":
