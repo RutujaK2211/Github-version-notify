@@ -374,7 +374,7 @@ class GitHubActionsVersionUpdater:
 
 if __name__ == "__main__":
     with gha_utils.group("Parse Configuration"):
-        user_configuration = Configuration.create(os.environ)
+        #user_configuration = Configuration.create(os.environ)
         action_environment = ActionEnvironment.from_env(os.environ)
 
         gha_utils.echo("Using Configuration:")
@@ -382,34 +382,10 @@ if __name__ == "__main__":
 
     # Configure Git Safe Directory
     configure_safe_directory(action_environment.github_workspace)
-
-    # Configure Git Author
-    configure_git_author(
-        user_configuration.git_committer_username,
-        user_configuration.git_committer_email,
     )
 
-
-if __name__ == "__main__":
-    with gha_utils.group("Parse Configuration"):
-        user_configuration = Configuration.create(os.environ)
-        action_environment = ActionEnvironment.from_env(os.environ)
-
-        gha_utils.echo("Using Configuration:")
-        gha_utils.echo(pprint.pformat(user_configuration._asdict()))
-
-    # Configure Git Safe Directory
-    configure_safe_directory(action_environment.github_workspace)
-
-    # Configure Git Author
-    configure_git_author(
-        user_configuration.git_committer_username,
-        user_configuration.git_committer_email,
-    )
-
-    with gha_utils.group("Run GitHub Actions Version Updater"):
+    with gha_utils.group("Run GitHub Actions Version Notification"):
         actions_version_updater = GitHubActionsVersionUpdater(
             action_environment,
-            user_configuration,
         )
         actions_version_updater.run()
