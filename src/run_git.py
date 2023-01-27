@@ -23,6 +23,15 @@ def configure_safe_directory(directory: str) -> None:
         run_subprocess_command(
             ["git", "config", "--global", "--add", "safe.directory", directory]
         )
+def git_has_changes() -> bool:
+    """
+    Check if there are changes to commit.
+    """
+    try:
+        subprocess.check_output(["git", "diff", "--exit-code"])
+        return False
+    except subprocess.CalledProcessError:
+        return True
         
 def git_diff() -> str:
     """Return the git diff"""
