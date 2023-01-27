@@ -61,7 +61,7 @@ class GitHubActionsVersionUpdater:
             )
 
         if git_has_changes():
-            post_message_to_slack()
+            gha_utils.echo("change found")
         else:
             gha_utils.notice("Everything is up-to-date! \U0001F389 \U0001F389")
 
