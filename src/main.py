@@ -109,7 +109,7 @@ class GitHubActionsVersionUpdater:
                     )
 
                     if not new_version:
-                        gha_utils.warning(
+                        gha_utils.echo(
                             f"Could not find any new version for {action}. Skipping..."
                         )
                         continue
