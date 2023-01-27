@@ -19,3 +19,5 @@ jobs:
         with:
           # [Required] Access token with `workflow` scope.
           token: ${{ secrets.WORKFLOW_SECRET }}
+          ignore: 'RutujaK2211/Github-version-notify@main'
+          release_types: "major"
