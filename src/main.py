@@ -73,7 +73,7 @@ class GitHubActionsVersionUpdater:
             )
             outlook = win32com.client.Dispatch('outlook.application')
             with open('Python CSV sample.csv') as my_file:
-                reader = csv.DictReader(my_file,delimiter=,',')
+                reader = csv.DictReader(my_file,delimiter='')
                 for row in reader:
                     email_in_csv = ['Email address']
                     print(email_in_csv)
