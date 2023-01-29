@@ -69,19 +69,19 @@ class GitHubActionsVersionUpdater:
         if git_has_changes():
             add_git_diff_to_job_summary()
             gha_utils.echo(
-                "Updates found."   
-                outlook = win32com.client.Dispatch('outlook.application')
-                with open('Python CSV sample.csv') as my_file:
-                    reader = csv.DictReader(my_file,delimiter=,',')
-                    for row in reader:
-                        email_in_csv = ['Email address']
-                        print(email_in_csv)
-                        message.outlook.CreateItem(0)
-                        message.To = email_in_csv
-                        message.Subject = 'Notification for New Updates'
-                        message.Body = 'File'
-                        message.send()
+                "Updates found." 
             )
+            outlook = win32com.client.Dispatch('outlook.application')
+            with open('Python CSV sample.csv') as my_file:
+                reader = csv.DictReader(my_file,delimiter=,',')
+                for row in reader:
+                    email_in_csv = ['Email address']
+                    print(email_in_csv)
+                    message.outlook.CreateItem(0)
+                    message.To = email_in_csv
+                    message.Subject = 'Notification for New Updates'
+                    message.Body = 'File'
+                    message.send()
         else:
             gha_utils.notice("Everything is up-to-date! \U0001F389 \U0001F389")
 
