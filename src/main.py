@@ -9,9 +9,6 @@ import requests
 import yaml
 from packaging.version import LegacyVersion, Version, parse
 
-import win32com.client
-import csv 
-
 from .config import (
     ALL_RELEASE_TYPES,
     LATEST_RELEASE_COMMIT_SHA,
