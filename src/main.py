@@ -20,13 +20,17 @@ from .config import (
     Configuration,
 )
 from .run_git import (
-    configure_git_author,
     configure_safe_directory,
+    git_commit_changes,
+    git_has_changes,
 )
 from .utils import (
     add_git_diff_to_job_summary,
+    display_whats_new,
     get_request_headers,
 )
+
+
 class GitHubActionsVersionUpdater:
     """Check for GitHub Action updates"""
 
@@ -61,7 +65,10 @@ class GitHubActionsVersionUpdater:
             )
 
         if git_has_changes():
-            gha_utils.echo("change found")
+            add_git_diff_to_job_summary()
+            gha_utils.echo(
+                "Updates found."    
+            )
         else:
             gha_utils.notice("Everything is up-to-date! \U0001F389 \U0001F389")
 
@@ -109,7 +116,7 @@ class GitHubActionsVersionUpdater:
                     )
 
                     if not new_version:
-                        gha_utils.echo(
+                        gha_utils.warning(
                             f"Could not find any new version for {action}. Skipping..."
                         )
                         continue
@@ -123,7 +130,12 @@ class GitHubActionsVersionUpdater:
                                 action_repository, new_version_data
                             )
                         )
-                        
+                        gha_utils.echo(
+                            f'Update "{action}" ---> "{updated_action}".'
+                        )
+                        updated_workflow_data = updated_workflow_data.replace(
+                            action, updated_action
+                        )
                     else:
                         gha_utils.echo(f'No updates found for "{action_repository}"')
 
@@ -248,6 +260,33 @@ class GitHubActionsVersionUpdater:
             }
         return {}
 
+    def _get_commit_data(
+        self, action_repository: str, tag_or_branch_name: str
+    ) -> dict[str, str]:
+        """Get the commit Data for Tag or Branch using GitHub API"""
+        url = (
+            f"{self.github_api_url}/repos"
+            f"/{action_repository}/commits?sha={tag_or_branch_name}"
+        )
+
+        response = requests.get(
+            url, headers=get_request_headers(self.user_config.github_token)
+        )
+
+        if response.status_code == 200:
+            response_data = response.json()[0]
+
+            return {
+                "commit_sha": response_data["sha"],
+                "commit_url": response_data["html_url"],
+                "commit_date": response_data["commit"]["author"]["date"],
+            }
+
+        gha_utils.warning(
+            f"Could not find commit data for tag/branch {tag_or_branch_name} on "
+            f'"{action_repository}", GitHub API Response: {response.json()}'
+        )
+        return {}
 
     def _get_default_branch_name(self, action_repository: str) -> str | None:
         """Get the Action Repository's Default Branch Name using GitHub API"""
@@ -360,16 +399,6 @@ class GitHubActionsVersionUpdater:
         elif isinstance(data, list):
             for element in data:
                 yield from self._get_all_actions(element)
-                
-    def post_message_to_slack(text, blocks = None):
-        return requests.post('https://slack.com/api/chat.postMessage', {
-            'token': slack_token,
-            'channel': slack_channel,
-            'text': text,
-            'icon_emoji': slack_icon_emoji,
-            'username': slack_user_name,
-            'blocks': json.dumps(blocks) if blocks else None
-        }).json()            
 
 
 if __name__ == "__main__":
@@ -383,7 +412,7 @@ if __name__ == "__main__":
     # Configure Git Safe Directory
     configure_safe_directory(action_environment.github_workspace)
 
-    with gha_utils.group("Run GitHub Actions Version Updater"):
+    with gha_utils.group("Run GitHub Actions Version Notify"):
         actions_version_updater = GitHubActionsVersionUpdater(
             action_environment,
             user_configuration,
