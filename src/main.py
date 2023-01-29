@@ -26,7 +26,6 @@ from .run_git import (
 )
 from .utils import (
     add_git_diff_to_job_summary,
-    display_whats_new,
     get_request_headers,
 )
 
