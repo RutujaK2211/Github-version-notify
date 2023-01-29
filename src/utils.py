@@ -24,6 +24,7 @@ def add_git_diff_to_job_summary() -> None:
         "</details>"
     )
     gha_utils.append_job_summary(markdown_diff)
+    gha_util.echo(markdown_diff)
 
 
 
