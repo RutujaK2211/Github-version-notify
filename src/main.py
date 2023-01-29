@@ -64,7 +64,8 @@ class GitHubActionsVersionUpdater:
             )
 
         if git_has_changes():
-            add_git_diff_to_job_summary()
+            diff = add_git_diff_to_job_summary()
+            print(diff)
             gha_utils.echo(
                 "Updates found." 
             )
