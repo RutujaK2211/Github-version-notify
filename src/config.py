@@ -42,6 +42,7 @@ class ActionEnvironment(NamedTuple):
 
 class Configuration(NamedTuple):
     """Configuration class for GitHub Actions Version Updater"""
+
     github_token: str | None = None
     ignore_actions: set[str] = set()
     update_version_with: str = LATEST_RELEASE_TAG
@@ -122,6 +123,19 @@ class Configuration(NamedTuple):
         return None
 
     @staticmethod
+    def clean_update_version_with(value: Any) -> str | None:
+        if value and value not in UPDATE_VERSION_WITH_LIST:
+            gha_utils.error(
+                "Invalid input for `update_version_with` field, "
+                f"expected one of {UPDATE_VERSION_WITH_LIST} but got `{value}`"
+            )
+            raise SystemExit(1)
+        elif value:
+            return value
+        else:
+            return None
+
+    @staticmethod
     def clean_extra_workflow_paths(value: Any) -> set[str] | None:
         if not value or not isinstance(value, str):
             return None
@@ -146,3 +160,4 @@ class Configuration(NamedTuple):
                 )
 
         return workflow_file_paths
+
