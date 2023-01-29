@@ -309,7 +309,7 @@ class GitHubActionsVersionUpdater:
         self, action_repository: str, current_version: str
     ) -> tuple[str | None, dict[str, str]]:
         """Get the new version for the action"""
-        gha_utils.echo(f'Checking "{action_repository}" for updates...')
+        gha_utils.echo(f'--Checking "{action_repository}" for updates...')
 
         if self.user_config.update_version_with == LATEST_RELEASE_TAG:
             latest_release_data = self._get_latest_version_release(
