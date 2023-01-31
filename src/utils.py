@@ -2,7 +2,7 @@ from functools import cache
 
 import github_action_utils as gha_utils  # type: ignore
 import requests
-
+import json
 from .run_git import git_diff
 
 @cache
@@ -24,4 +24,10 @@ def add_git_diff_to_job_summary() -> None:
         "</details>"
     )
     gha_utils.append_job_summary(markdown_diff)
-    return markdown_diff
+    
+
+def post_msg_to_slack() -> None:
+    slack_msg =  {'text':'{add_git_diff_to_job_summary()}'}   
+    requests.post(self.user_config.slack_webhook_url,data=json.dumps(slack_msg))
+    print(slack_msg)
+    f'"{slack_webhook_url}"'
