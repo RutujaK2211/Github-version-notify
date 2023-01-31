@@ -27,6 +27,7 @@ from .run_git import (
 from .utils import (
     add_git_diff_to_job_summary,
     get_request_headers,
+    post_msg_to_slack(),
 )
 
 
@@ -399,12 +400,6 @@ class GitHubActionsVersionUpdater:
         elif isinstance(data, list):
             for element in data:
                 yield from self._get_all_actions(element)
-                
-    def post_msg_to_slack(self) -> set[str]:
-        slack_msg =  {'text':'{add_git_diff_to_job_summary()}'}   
-        requests.post(self.user_config.slack_webhook_url,data=json.dumps(slack_msg))
-        print(slack_msg)
-        print(self.user_config.slack_webhook_url)
 
 if __name__ == "__main__":
     with gha_utils.group("Parse Configuration"):
