@@ -2,7 +2,7 @@ name: GitHub Actions Version Notification
 
 # Controls when the action will run.
 on:
-  pull_request
+  push
 
 jobs:
   build:
