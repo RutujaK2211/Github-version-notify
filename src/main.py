@@ -425,7 +425,7 @@ if __name__ == "__main__":
     # Configure Git Safe Directory
     configure_safe_directory(action_environment.github_workspace)
 
-    with gha_utils.group("Run GitHub Actions Version Updater"):
+    with gha_utils.group("Run GitHub Actions Version Notification"):
         actions_version_updater = GitHubActionsVersionUpdater(
             action_environment,
             user_configuration,
