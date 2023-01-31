@@ -21,7 +21,6 @@ from .config import (
 )
 from .run_git import (
     configure_safe_directory,
-    git_has_changes,
 )
 from .utils import (
     get_request_headers,
