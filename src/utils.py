@@ -26,7 +26,7 @@ def add_git_diff_to_job_summary() -> None:
     gha_utils.append_job_summary(markdown_diff)
     
 
-def post_msg_to_slack() -> None:
+def post_msg_to_slack(slack_webhook_url: str | None = None) -> None:
     slack_msg =  {'text':'"{add_git_diff_to_job_summary()}"'}   
     url = slack_webhook_url
     requests.post(url,data=json.dumps(slack_msg))
