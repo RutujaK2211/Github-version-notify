@@ -48,6 +48,7 @@ class Configuration(NamedTuple):
     update_version_with: str = LATEST_RELEASE_TAG
     release_types: list[str] = ALL_RELEASE_TYPES
     extra_workflow_paths: set[str] = set()
+    slack_webhook_url: str | None = None
 
     @classmethod
     def create(cls, env: Mapping[str, str | None]) -> "Configuration":
@@ -70,6 +71,7 @@ class Configuration(NamedTuple):
             "update_version_with": env.get("INPUT_UPDATE_VERSION_WITH"),
             "release_types": env.get("INPUT_RELEASE_TYPES"),
             "extra_workflow_paths": env.get("INPUT_EXTRA_WORKFLOW_LOCATIONS"),
+            "slack_webhook_url": env.get("INPUT_SLACK_WEBHOOK"),
         }
         return user_config
 
