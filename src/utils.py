@@ -28,7 +28,6 @@ def add_git_diff_to_job_summary() -> None:
 
 def post_msg_to_slack() -> None:
     slack_msg =  {'text':'Hello'}   
-    weburl = https://hooks.slack.com/services/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
+    weburl = "https://hooks.slack.com/services/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"
     requests.post(weburl,data=json.dumps(slack_msg))
-    print(slack_msg)
-    f'"{slack_webhook_url}"'
+    
