@@ -69,7 +69,11 @@ class GitHubActionsVersionUpdater:
             gha_utils.echo(
                 "-------------------------------------Updates found----------------------------------" 
             )
-            post_msg_to_slack()            
+            slack_msg =  {'text':'"{add_git_diff_to_job_summary()}"'}   
+            url = user_config.slack_webhook_url
+            requests.post(url,data=json.dumps(slack_msg))
+            print(slack_msg)
+            f'"{user_config.slack_webhook_url}"'            
         else:
             gha_utils.notice("Everything is up-to-date! \U0001F389 \U0001F389")
 
