@@ -3,7 +3,7 @@ import pprint
 from collections.abc import Generator
 from functools import cache, cached_property
 from typing import Any
-
+import json
 import github_action_utils as gha_utils  # type: ignore
 import requests
 import yaml
@@ -400,7 +400,10 @@ class GitHubActionsVersionUpdater:
         elif isinstance(data, list):
             for element in data:
                 yield from self._get_all_actions(element)
-
+                
+    def _post_msg_to_slack(self) -> set[str]:
+        slack_msg =  {'text':'{add_git_diff_to_job_summary()}'}   
+        requests.post(self.user_config.slack_webhook_url,data=json.dumps(slack_msg))
 
 if __name__ == "__main__":
     with gha_utils.group("Parse Configuration"):
