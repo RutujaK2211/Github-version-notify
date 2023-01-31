@@ -20,19 +20,12 @@ from .config import (
     Configuration,
 )
 from .run_git import (
-    configure_git_author,
     configure_safe_directory,
-    create_new_git_branch,
-    git_commit_changes,
     git_has_changes,
 )
 from .utils import (
-    add_git_diff_to_job_summary,
-    add_pull_request_labels,
-    add_pull_request_reviewers,
-    create_pull_request,
-    display_whats_new,
     get_request_headers,
+    add_git_diff_to_job_summary,
 )
 
 class GitHubActionsVersionUpdater:
@@ -166,7 +159,7 @@ class GitHubActionsVersionUpdater:
             )
             return []
     
-   def _generate_updated_item_markdown(
+    def _generate_updated_item_markdown(
         self, action_repository: str, version_data: dict[str, str]
     ) -> str:
         """Generate pull request body line for pull request body"""
