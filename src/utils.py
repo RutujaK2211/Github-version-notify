@@ -30,4 +30,5 @@ def post_msg_to_slack() -> None:
     slack_msg =  {"text":"Hello "}   
     weburl = "https://hooks.slack.com/services/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"
     requests.post(weburl,json.dumps(slack_msg))
-    
+    print(slack_msg)
+    print(weburl)
