@@ -22,7 +22,7 @@ inputs:
     default: ''
   slack_webhook_url:
     description: 'URL to post messages into a slack channel'
-    required: true
+    required: false
     default: ''
 
 runs:
