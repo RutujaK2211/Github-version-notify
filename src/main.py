@@ -25,6 +25,7 @@ from .run_git import (
 from .utils import (
     get_request_headers,
     add_git_diff_to_job_summary,
+    post_msg_to_slack,
 )
 
 class GitHubActionsVersionUpdater:
@@ -431,3 +432,4 @@ if __name__ == "__main__":
             user_configuration,
         )
         actions_version_updater.run()
+    post_msg_to_slack()
