@@ -27,7 +27,6 @@ from .run_git import (
 from .utils import (
     add_git_diff_to_job_summary,
     get_request_headers,
-    post_msg_to_slack,
 )
 
 
