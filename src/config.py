@@ -57,7 +57,7 @@ class Configuration(NamedTuple):
         )
         return cls(**cleaned_user_config)
         
-     @classmethod
+    @classmethod
     def get_user_config(cls, env: Mapping[str, str | None]) -> dict[str, str | None]:
         """
         Read user provided input and return user configuration
@@ -120,7 +120,7 @@ class Configuration(NamedTuple):
                 raise SystemExit(1)
         return None
 
-     @staticmethod
+    @staticmethod
     def clean_extra_workflow_paths(value: Any) -> set[str] | None:
         if not value or not isinstance(value, str):
             return None
@@ -144,5 +144,3 @@ class Configuration(NamedTuple):
                     "as it is not a valid file or directory"
                 )
         return workflow_file_paths
-    
-    
