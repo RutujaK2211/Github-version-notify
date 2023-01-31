@@ -178,7 +178,7 @@ class GitHubActionsVersionUpdater:
                 f"branch on {version_data['commit_date']}\n"
             )
 
-    def _get_github_releases(self, action_repository: str) -> list[dict[str, Any]]:
+   """ def _get_github_releases(self, action_repository: str) -> list[dict[str, Any]]:
         """Get the GitHub releases using GitHub API"""
         url = f"{self.github_api_url}/repos/{action_repository}/releases?per_page=50"
 
@@ -203,7 +203,7 @@ class GitHubActionsVersionUpdater:
             f'"{action_repository}", GitHub API Response: {response.json()}'
         )
         return []
-
+"""
     @cached_property
     def _release_filter_function(self):
         """Get the release filter function"""
