@@ -3,7 +3,7 @@ import pprint
 from collections.abc import Generator
 from functools import cache, cached_property
 from typing import Any
-import json
+
 import github_action_utils as gha_utils  # type: ignore
 import requests
 import yaml
@@ -20,15 +20,20 @@ from .config import (
     Configuration,
 )
 from .run_git import (
+    configure_git_author,
     configure_safe_directory,
+    create_new_git_branch,
     git_commit_changes,
     git_has_changes,
 )
 from .utils import (
     add_git_diff_to_job_summary,
+    add_pull_request_labels,
+    add_pull_request_reviewers,
+    create_pull_request,
+    display_whats_new,
     get_request_headers,
 )
-
 
 class GitHubActionsVersionUpdater:
     """Check for GitHub Action updates"""
@@ -40,7 +45,7 @@ class GitHubActionsVersionUpdater:
     def __init__(self, env: ActionEnvironment, user_config: Configuration):
         self.env = env
         self.user_config = user_config
-
+ 
     def run(self) -> None:
         """Entrypoint to the GitHub Action"""
         workflow_paths = self._get_workflow_paths()
@@ -62,8 +67,7 @@ class GitHubActionsVersionUpdater:
             updated_item_markdown_set = updated_item_markdown_set.union(
                 self._update_workflow(workflow_path)
             )
-
-     
+            
     def _update_workflow(self, workflow_path: str) -> set[str]:
         """Update the workflow file with the updated data"""
         updated_item_markdown_set: set[str] = set()
@@ -73,7 +77,7 @@ class GitHubActionsVersionUpdater:
                 f'Checking "{workflow_path}" for updates'
             ):
                 file_data = file.read()
-                updated_workflow_data = file_data
+                #updated_workflow_data = file_data
 
                 try:
                     workflow_data = yaml.load(file_data, Loader=yaml.FullLoader)
@@ -123,9 +127,8 @@ class GitHubActionsVersionUpdater:
                             )
                         )
                         gha_utils.echo(
-                            f'Update "{action}" ---> "{updated_action}".'
+                            f'Available NEW Version for "{action}" is "{updated_action}"'
                         )
-                        
                     else:
                         gha_utils.echo(f'No updates found for "{action_repository}"')
 
@@ -136,8 +139,34 @@ class GitHubActionsVersionUpdater:
         except FileNotFoundError:
             gha_utils.warning(f"Workflow file '{workflow_path}' not found")
         return updated_item_markdown_set
+    
+        def _get_github_releases(self, action_repository: str) -> list[dict[str, Any]]:
+        """Get the GitHub releases using GitHub API"""
+        url = f"{self.github_api_url}/repos/{action_repository}/releases?per_page=50"
 
-    def _generate_updated_item_markdown(
+        response = requests.get(
+            url, headers=get_request_headers(self.user_config.github_token)
+        )
+
+        if response.status_code == 200:
+            response_data = response.json()
+
+            if response_data:
+                # Sort through the releases returned
+                # by GitHub API using tag_name
+                return sorted(
+                    filter(lambda r: not r["prerelease"], response_data),
+                    key=lambda r: parse(r["tag_name"]),
+                    reverse=True,
+                )
+
+        gha_utils.warning(
+            f"Could not find any release for "
+            f'"{action_repository}", GitHub API Response: {response.json()}'
+        )
+        return []
+    
+   def _generate_updated_item_markdown(
         self, action_repository: str, version_data: dict[str, str]
     ) -> str:
         """Generate pull request body line for pull request body"""
@@ -163,6 +192,32 @@ class GitHubActionsVersionUpdater:
                 f"**[{version_data['branch_name']}]({version_data['branch_url']})** "
                 f"branch on {version_data['commit_date']}\n"
             )
+
+    def _get_github_releases(self, action_repository: str) -> list[dict[str, Any]]:
+        """Get the GitHub releases using GitHub API"""
+        url = f"{self.github_api_url}/repos/{action_repository}/releases?per_page=50"
+
+        response = requests.get(
+            url, headers=get_request_headers(self.user_config.github_token)
+        )
+
+        if response.status_code == 200:
+            response_data = response.json()
+
+            if response_data:
+                # Sort through the releases returned
+                # by GitHub API using tag_name
+                return sorted(
+                    filter(lambda r: not r["prerelease"], response_data),
+                    key=lambda r: parse(r["tag_name"]),
+                    reverse=True,
+                )
+
+        gha_utils.warning(
+            f"Could not find any release for "
+            f'"{action_repository}", GitHub API Response: {response.json()}'
+        )
+        return []
 
     @cached_property
     def _release_filter_function(self):
@@ -224,6 +279,33 @@ class GitHubActionsVersionUpdater:
             }
         return {}
 
+    def _get_commit_data(
+        self, action_repository: str, tag_or_branch_name: str
+    ) -> dict[str, str]:
+        """Get the commit Data for Tag or Branch using GitHub API"""
+        url = (
+            f"{self.github_api_url}/repos"
+            f"/{action_repository}/commits?sha={tag_or_branch_name}"
+        )
+
+        response = requests.get(
+            url, headers=get_request_headers(self.user_config.github_token)
+        )
+
+        if response.status_code == 200:
+            response_data = response.json()[0]
+
+            return {
+                "commit_sha": response_data["sha"],
+                "commit_url": response_data["html_url"],
+                "commit_date": response_data["commit"]["author"]["date"],
+            }
+
+        gha_utils.warning(
+            f"Could not find commit data for tag/branch {tag_or_branch_name} on "
+            f'"{action_repository}", GitHub API Response: {response.json()}'
+        )
+        return {}
 
     def _get_default_branch_name(self, action_repository: str) -> str | None:
         """Get the Action Repository's Default Branch Name using GitHub API"""
@@ -242,12 +324,13 @@ class GitHubActionsVersionUpdater:
         )
         return None
 
+    # flake8: noqa: B019
     @cache
     def _get_new_version(
         self, action_repository: str, current_version: str
     ) -> tuple[str | None, dict[str, str]]:
         """Get the new version for the action"""
-        gha_utils.echo(f'--Checking "{action_repository}" for updates...')
+        gha_utils.echo(f'Checking "{action_repository}" for updates...')
 
         if self.user_config.update_version_with == LATEST_RELEASE_TAG:
             latest_release_data = self._get_latest_version_release(
@@ -337,6 +420,8 @@ class GitHubActionsVersionUpdater:
             for element in data:
                 yield from self._get_all_actions(element)
 
+
+
 if __name__ == "__main__":
     with gha_utils.group("Parse Configuration"):
         user_configuration = Configuration.create(os.environ)
@@ -348,7 +433,7 @@ if __name__ == "__main__":
     # Configure Git Safe Directory
     configure_safe_directory(action_environment.github_workspace)
 
-    with gha_utils.group("Run GitHub Actions Version Notify"):
+    with gha_utils.group("Run GitHub Actions Version Updater"):
         actions_version_updater = GitHubActionsVersionUpdater(
             action_environment,
             user_configuration,
