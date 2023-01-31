@@ -16,13 +16,11 @@ UPDATE_VERSION_WITH_LIST = [
     LATEST_RELEASE_COMMIT_SHA,
     DEFAULT_BRANCH_COMMIT_SHA,
 ]
-
 MAJOR_RELEASE = "major"
 MINOR_RELEASE = "minor"
 PATCH_RELEASE = "patch"
 
 ALL_RELEASE_TYPES = [MAJOR_RELEASE, MINOR_RELEASE, PATCH_RELEASE]
-
 
 class ActionEnvironment(NamedTuple):
     repository: str
@@ -38,18 +36,17 @@ class ActionEnvironment(NamedTuple):
             event_name=env["GITHUB_EVENT_NAME"],
             github_workspace=env["GITHUB_WORKSPACE"],
         )
-
-
+        
 class Configuration(NamedTuple):
     """Configuration class for GitHub Actions Version Updater"""
 
     github_token: str | None = None
     ignore_actions: set[str] = set()
-    update_version_with: str = LATEST_RELEASE_TAG
+    #update_version_with: str = LATEST_RELEASE_TAG
     release_types: list[str] = ALL_RELEASE_TYPES
-    extra_workflow_paths: set[str] = set()
+    extra_workflow_paths: set[str] = set() 
     slack_webhook_url: str | None = None
-
+    
     @classmethod
     def create(cls, env: Mapping[str, str | None]) -> "Configuration":
         """
@@ -59,8 +56,8 @@ class Configuration(NamedTuple):
             cls.get_user_config(env)
         )
         return cls(**cleaned_user_config)
-
-    @classmethod
+        
+     @classmethod
     def get_user_config(cls, env: Mapping[str, str | None]) -> dict[str, str | None]:
         """
         Read user provided input and return user configuration
@@ -68,13 +65,12 @@ class Configuration(NamedTuple):
         user_config: dict[str, str | None] = {
             "github_token": env.get("INPUT_TOKEN"),
             "ignore_actions": env.get("INPUT_IGNORE"),
-            "update_version_with": env.get("INPUT_UPDATE_VERSION_WITH"),
+           # "update_version_with": env.get("INPUT_UPDATE_VERSION_WITH"),
             "release_types": env.get("INPUT_RELEASE_TYPES"),
             "extra_workflow_paths": env.get("INPUT_EXTRA_WORKFLOW_LOCATIONS"),
             "slack_webhook_url": env.get("INPUT_SLACK_WEBHOOK"),
         }
-        return user_config
-
+        return user_config    
     @classmethod
     def clean_user_config(cls, user_config: dict[str, str | None]) -> dict[str, Any]:
         cleaned_user_config: dict[str, Any] = {}
@@ -87,7 +83,7 @@ class Configuration(NamedTuple):
                     cleaned_user_config[key] = cleaned_value
 
         return cleaned_user_config
-
+    
     @staticmethod
     def clean_ignore_actions(value: Any) -> set[str] | None:
         if isinstance(value, str) and value.startswith("[") and value.endswith("]"):
@@ -124,20 +120,7 @@ class Configuration(NamedTuple):
                 raise SystemExit(1)
         return None
 
-    @staticmethod
-    def clean_update_version_with(value: Any) -> str | None:
-        if value and value not in UPDATE_VERSION_WITH_LIST:
-            gha_utils.error(
-                "Invalid input for `update_version_with` field, "
-                f"expected one of {UPDATE_VERSION_WITH_LIST} but got `{value}`"
-            )
-            raise SystemExit(1)
-        elif value:
-            return value
-        else:
-            return None
-
-    @staticmethod
+     @staticmethod
     def clean_extra_workflow_paths(value: Any) -> set[str] | None:
         if not value or not isinstance(value, str):
             return None
@@ -160,6 +143,6 @@ class Configuration(NamedTuple):
                     f"Skipping '{workflow_location}' "
                     "as it is not a valid file or directory"
                 )
-
         return workflow_file_paths
-
+    
+    
