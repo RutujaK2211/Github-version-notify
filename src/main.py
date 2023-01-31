@@ -69,7 +69,7 @@ class GitHubActionsVersionUpdater:
                 f'Checking "{workflow_path}" for updates'
             ):
                 file_data = file.read()
-                #updated_workflow_data = file_data
+                updated_workflow_data = file_data
 
                 try:
                     workflow_data = yaml.load(file_data, Loader=yaml.FullLoader)
