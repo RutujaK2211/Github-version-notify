@@ -2,10 +2,6 @@ import subprocess
 
 import github_action_utils as gha_utils  # type: ignore
 
-
-
-
-
 def configure_safe_directory(directory: str) -> None:
     """
     Configure git safe.directory.
@@ -14,9 +10,6 @@ def configure_safe_directory(directory: str) -> None:
         run_subprocess_command(
             ["git", "config", "--global", "--add", "safe.directory", directory]
         )
-
-
-
 
 def git_commit_changes(
     commit_message: str,
@@ -65,3 +58,4 @@ def run_subprocess_command(command: list[str]) -> None:
         raise SystemExit(result.returncode)
 
     gha_utils.echo(result.stdout)
+    gha_utils.echo("-----------------**************----------------------------")
