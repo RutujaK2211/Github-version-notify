@@ -64,12 +64,11 @@ class GitHubActionsVersionUpdater:
             )
 
         if git_has_changes():
-            diff = add_git_diff_to_job_summary()
-            print(diff)
+            add_git_diff_to_job_summary()
             gha_utils.echo(
-                "Updates found." 
+                "-------------------------------------Updates found----------------------------------" 
             )
-            
+            post_msg_to_slack()            
         else:
             gha_utils.notice("Everything is up-to-date! \U0001F389 \U0001F389")
 
@@ -401,7 +400,7 @@ class GitHubActionsVersionUpdater:
             for element in data:
                 yield from self._get_all_actions(element)
                 
-    def _post_msg_to_slack(self) -> set[str]:
+    def post_msg_to_slack(self) -> set[str]:
         slack_msg =  {'text':'{add_git_diff_to_job_summary()}'}   
         requests.post(self.user_config.slack_webhook_url,data=json.dumps(slack_msg))
         print(slack_msg)
