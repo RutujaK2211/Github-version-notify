@@ -167,7 +167,7 @@ class GitHubActionsVersionUpdater:
             )
 
    """ def _get_github_releases(self, action_repository: str) -> list[dict[str, Any]]:
-        """Get the GitHub releases using GitHub API"""
+        #Get the GitHub releases using GitHub API
         url = f"{self.github_api_url}/repos/{action_repository}/releases?per_page=50"
 
         response = requests.get(
