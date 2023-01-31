@@ -7,7 +7,7 @@ inputs:
     default: ''
   token:
     description: 'GitHub Personal Access Token with `workflow` scope'
-    required: true
+    required: false
   update_version_with:
     description: 'Use The Latest Release Tag/Commit SHA or Default Branch Commit SHA to update the actions. options: "release-tag" (default), "release-commit-sha", "default-branch-sha"'
     required: false
