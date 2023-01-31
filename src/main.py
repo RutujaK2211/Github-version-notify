@@ -125,9 +125,7 @@ class GitHubActionsVersionUpdater:
                         gha_utils.echo(
                             f'Update "{action}" ---> "{updated_action}".'
                         )
-                        updated_workflow_data = updated_workflow_data.replace(
-                            action, updated_action
-                        )
+                        
                     else:
                         gha_utils.echo(f'No updates found for "{action_repository}"')
 
@@ -166,32 +164,6 @@ class GitHubActionsVersionUpdater:
                 f"branch on {version_data['commit_date']}\n"
             )
 
-   """ def _get_github_releases(self, action_repository: str) -> list[dict[str, Any]]:
-        #Get the GitHub releases using GitHub API
-        url = f"{self.github_api_url}/repos/{action_repository}/releases?per_page=50"
-
-        response = requests.get(
-            url, headers=get_request_headers(self.user_config.github_token)
-        )
-
-        if response.status_code == 200:
-            response_data = response.json()
-
-            if response_data:
-                # Sort through the releases returned
-                # by GitHub API using tag_name
-                return sorted(
-                    filter(lambda r: not r["prerelease"], response_data),
-                    key=lambda r: parse(r["tag_name"]),
-                    reverse=True,
-                )
-
-        gha_utils.warning(
-            f"Could not find any release for "
-            f'"{action_repository}", GitHub API Response: {response.json()}'
-        )
-        return []
-"""
     @cached_property
     def _release_filter_function(self):
         """Get the release filter function"""
@@ -252,33 +224,6 @@ class GitHubActionsVersionUpdater:
             }
         return {}
 
-    def _get_commit_data(
-        self, action_repository: str, tag_or_branch_name: str
-    ) -> dict[str, str]:
-        """Get the commit Data for Tag or Branch using GitHub API"""
-        url = (
-            f"{self.github_api_url}/repos"
-            f"/{action_repository}/commits?sha={tag_or_branch_name}"
-        )
-
-        response = requests.get(
-            url, headers=get_request_headers(self.user_config.github_token)
-        )
-
-        if response.status_code == 200:
-            response_data = response.json()[0]
-
-            return {
-                "commit_sha": response_data["sha"],
-                "commit_url": response_data["html_url"],
-                "commit_date": response_data["commit"]["author"]["date"],
-            }
-
-        gha_utils.warning(
-            f"Could not find commit data for tag/branch {tag_or_branch_name} on "
-            f'"{action_repository}", GitHub API Response: {response.json()}'
-        )
-        return {}
 
     def _get_default_branch_name(self, action_repository: str) -> str | None:
         """Get the Action Repository's Default Branch Name using GitHub API"""
