@@ -432,4 +432,6 @@ if __name__ == "__main__":
             user_configuration,
         )
         actions_version_updater.run()
+        
+    with gha_utils.group("Post Message to Slack"):
     post_msg_to_slack()
