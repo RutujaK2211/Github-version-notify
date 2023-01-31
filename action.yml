@@ -20,6 +20,10 @@ inputs:
     description: 'A comma separated string of file or directory paths to look for workflows. By default, only the workflow files in the .github/workflows directory are checked updates'
     required: false
     default: ''
+  slack_webhook_url:
+    description: 'URL to post messages into a slack channel'
+    required: true
+    default: ''
 
 runs:
   using: 'docker'
