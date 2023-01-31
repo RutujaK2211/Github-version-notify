@@ -434,4 +434,4 @@ if __name__ == "__main__":
         actions_version_updater.run()
         
     with gha_utils.group("Post Message to Slack"):
-    post_msg_to_slack()
+        post_msg_to_slack()
