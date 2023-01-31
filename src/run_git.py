@@ -1,3 +1,6 @@
+import subprocess
+import github_action_utils as gha_utils  # type: ignore
+
 def configure_safe_directory(directory: str) -> None:
     """
     Configure git safe.directory.
