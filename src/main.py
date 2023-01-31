@@ -63,19 +63,7 @@ class GitHubActionsVersionUpdater:
                 self._update_workflow(workflow_path)
             )
 
-        if git_has_changes():
-            add_git_diff_to_job_summary()
-            gha_utils.echo(
-                "-------------------------------------Updates found----------------------------------" 
-            )
-            slack_msg =  {'text':'"{add_git_diff_to_job_summary()}"'}   
-            url = user_config.slack_webhook_url
-            requests.post(url,data=json.dumps(slack_msg))
-            print(slack_msg)
-            f'"{user_config.slack_webhook_url}"'            
-        else:
-            gha_utils.notice("Everything is up-to-date! \U0001F389 \U0001F389")
-
+     
     def _update_workflow(self, workflow_path: str) -> set[str]:
         """Update the workflow file with the updated data"""
         updated_item_markdown_set: set[str] = set()
