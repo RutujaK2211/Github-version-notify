@@ -141,30 +141,30 @@ class GitHubActionsVersionUpdater:
         return updated_item_markdown_set
     
         def _get_github_releases(self, action_repository: str) -> list[dict[str, Any]]:
-        """Get the GitHub releases using GitHub API"""
-        url = f"{self.github_api_url}/repos/{action_repository}/releases?per_page=50"
+            """Get the GitHub releases using GitHub API"""
+            url = f"{self.github_api_url}/repos/{action_repository}/releases?per_page=50"
 
-        response = requests.get(
-            url, headers=get_request_headers(self.user_config.github_token)
-        )
+            response = requests.get(
+                url, headers=get_request_headers(self.user_config.github_token)
+            )
 
-        if response.status_code == 200:
-            response_data = response.json()
+            if response.status_code == 200:
+                response_data = response.json()
 
-            if response_data:
-                # Sort through the releases returned
-                # by GitHub API using tag_name
-                return sorted(
-                    filter(lambda r: not r["prerelease"], response_data),
-                    key=lambda r: parse(r["tag_name"]),
-                    reverse=True,
-                )
+                if response_data:
+                    # Sort through the releases returned
+                    # by GitHub API using tag_name
+                    return sorted(
+                        filter(lambda r: not r["prerelease"], response_data),
+                        key=lambda r: parse(r["tag_name"]),
+                        reverse=True,
+                    )
 
-        gha_utils.warning(
-            f"Could not find any release for "
-            f'"{action_repository}", GitHub API Response: {response.json()}'
-        )
-        return []
+            gha_utils.warning(
+                f"Could not find any release for "
+                f'"{action_repository}", GitHub API Response: {response.json()}'
+            )
+            return []
     
    def _generate_updated_item_markdown(
         self, action_repository: str, version_data: dict[str, str]
