@@ -161,18 +161,14 @@ class GitHubActionsVersionUpdater:
         """Generate pull request body line for pull request body"""
         start = f"* **[{action_repository}]({self.github_url}{action_repository})**"
 
-        if self.user_config.update_version_with == LATEST_RELEASE_TAG:
-            
-            payload = f"{start} published a new release **[{version_data['tag_name']}]({version_data['html_url']})** on {version_data['published_at']}\n"
-            #slack_client=WebClient
-            #slack_token = os.environ["xoxb-728460929616-4736161330145-qWsVuXJvm0rNreM1IX49DM4j"]
-            sc = WebClient('xoxb-728460929616-4736161330145-qWsVuXJvm0rNreM1IX49DM4j')
-            sc.api_call(
-            "chat.postMessage",
-            channel="#version-notify",
-            text="Hello from Python! 🎉"
-            )    
-                
+        if self.user_config.update_version_with == LATEST_RELEASE_TAG:   
+            client = WebClient(token=os.environ['xoxb-728460929616-4736161330145-qWsVuXJvm0rNreM1IX49DM4j'])
+            response = client.api_call(
+            api_method='chat.postMessage',
+            json={'channel': '#version-notify','text': "Hello world!"}
+            )
+            assert response["message"]["text"] == "Hello world!"
+  
             return (
                 f"{start} published a new release "
                 f"**[{version_data['tag_name']}]({version_data['html_url']})** "
