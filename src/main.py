@@ -21,12 +21,15 @@ from .config import (
 )
 from .run_git import (
     configure_safe_directory,
+    git_commit_changes,
+    git_has_changes,
 )
 from .utils import (
-    get_request_headers,
     add_git_diff_to_job_summary,
+    get_request_headers,
     post_msg_to_slack,
 )
+
 
 class GitHubActionsVersionUpdater:
     """Check for GitHub Action updates"""
@@ -38,7 +41,7 @@ class GitHubActionsVersionUpdater:
     def __init__(self, env: ActionEnvironment, user_config: Configuration):
         self.env = env
         self.user_config = user_config
- 
+
     def run(self) -> None:
         """Entrypoint to the GitHub Action"""
         workflow_paths = self._get_workflow_paths()
@@ -60,7 +63,24 @@ class GitHubActionsVersionUpdater:
             updated_item_markdown_set = updated_item_markdown_set.union(
                 self._update_workflow(workflow_path)
             )
-            
+
+        if git_has_changes():
+            # Use timestamp to ensure uniqueness of the new branch
+            pull_request_body = "### GitHub Actions Version Updates\n" + "".join(
+                updated_item_markdown_set
+            )
+            gha_utils.append_job_summary(pull_request_body)
+
+            else:
+                add_git_diff_to_job_summary()
+                gha_utils.echo(
+                    "Updates found , "
+                    "Checkout build summary for update details."
+                )
+                
+        else:
+            gha_utils.notice("Everything is up-to-date! \U0001F389 \U0001F389")
+
     def _update_workflow(self, workflow_path: str) -> set[str]:
         """Update the workflow file with the updated data"""
         updated_item_markdown_set: set[str] = set()
@@ -120,7 +140,10 @@ class GitHubActionsVersionUpdater:
                             )
                         )
                         gha_utils.echo(
-                            f'Available NEW Version for "{action}" is "{updated_action}"'
+                            f'Updating "{action}" with "{updated_action}"...'
+                        )
+                        updated_workflow_data = updated_workflow_data.replace(
+                            action, updated_action
                         )
                     else:
                         gha_utils.echo(f'No updates found for "{action_repository}"')
@@ -132,33 +155,7 @@ class GitHubActionsVersionUpdater:
         except FileNotFoundError:
             gha_utils.warning(f"Workflow file '{workflow_path}' not found")
         return updated_item_markdown_set
-    
-        def _get_github_releases(self, action_repository: str) -> list[dict[str, Any]]:
-            """Get the GitHub releases using GitHub API"""
-            url = f"{self.github_api_url}/repos/{action_repository}/releases?per_page=50"
 
-            response = requests.get(
-                url, headers=get_request_headers(self.user_config.github_token)
-            )
-
-            if response.status_code == 200:
-                response_data = response.json()
-
-                if response_data:
-                    # Sort through the releases returned
-                    # by GitHub API using tag_name
-                    return sorted(
-                        filter(lambda r: not r["prerelease"], response_data),
-                        key=lambda r: parse(r["tag_name"]),
-                        reverse=True,
-                    )
-
-            gha_utils.warning(
-                f"Could not find any release for "
-                f'"{action_repository}", GitHub API Response: {response.json()}'
-            )
-            return []
-    
     def _generate_updated_item_markdown(
         self, action_repository: str, version_data: dict[str, str]
     ) -> str:
@@ -414,7 +411,6 @@ class GitHubActionsVersionUpdater:
                 yield from self._get_all_actions(element)
 
 
-
 if __name__ == "__main__":
     with gha_utils.group("Parse Configuration"):
         user_configuration = Configuration.create(os.environ)
@@ -425,6 +421,8 @@ if __name__ == "__main__":
 
     # Configure Git Safe Directory
     configure_safe_directory(action_environment.github_workspace)
+
+
 
     with gha_utils.group("Run GitHub Actions Version Notification"):
         actions_version_updater = GitHubActionsVersionUpdater(
