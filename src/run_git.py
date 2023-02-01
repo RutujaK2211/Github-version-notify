@@ -1,5 +1,8 @@
 import subprocess
+
 import github_action_utils as gha_utils  # type: ignore
+
+
 
 def configure_safe_directory(directory: str) -> None:
     """
@@ -9,7 +12,24 @@ def configure_safe_directory(directory: str) -> None:
         run_subprocess_command(
             ["git", "config", "--global", "--add", "safe.directory", directory]
         )
-        
+
+
+def git_has_changes() -> bool:
+    """
+    Check if there are changes to commit.
+    """
+    try:
+        subprocess.check_output(["git", "diff", "--exit-code"])
+        return False
+    except subprocess.CalledProcessError:
+        return True
+
+
+def git_diff() -> str:
+    """Return the git diff"""
+    return subprocess.run(["git", "diff"], capture_output=True, text=True).stdout
+
+
 def run_subprocess_command(command: list[str]) -> None:
     result = subprocess.run(command, capture_output=True, text=True)
 
@@ -18,7 +38,3 @@ def run_subprocess_command(command: list[str]) -> None:
         raise SystemExit(result.returncode)
 
     gha_utils.echo(result.stdout)
-
-def git_diff() -> str:
-    """Return the git diff"""
-    return subprocess.run(["git", "diff"], capture_output=True, text=True).stdout    
