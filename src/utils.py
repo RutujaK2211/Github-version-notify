@@ -26,10 +26,10 @@ def add_git_diff_to_job_summary() -> None:
     return markdown_diff
     
 
-def post_msg_to_slack() -> None:
-    diff = add_git_diff_to_job_summary()
-    slack_msg =  {"text":"{add_git_diff_to_job_summary()} "}   
+#def post_msg_to_slack() -> None:
+   # diff = add_git_diff_to_job_summary()
+  #  slack_msg =  {"text":"{add_git_diff_to_job_summary()} "}   
     #weburl = "https://hooks.slack.com/services/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"
     #requests.post(weburl,json.dumps(slack_msg))
-    print(slack_msg)
-    print(diff)
+  #  print(slack_msg)
+  #  print(diff)
