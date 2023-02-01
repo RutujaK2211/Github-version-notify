@@ -72,11 +72,11 @@ class GitHubActionsVersionUpdater:
             gha_utils.append_job_summary(pull_request_body)
 
             
-                add_git_diff_to_job_summary()
-                gha_utils.echo(
-                    "Updates found , "
-                    "Checkout build summary for update details."
-                )
+            add_git_diff_to_job_summary()
+            gha_utils.echo(
+                "Updates found , "
+                "Checkout build summary for update details."
+            )
                 
         else:
             gha_utils.notice("Everything is up-to-date! \U0001F389 \U0001F389")
