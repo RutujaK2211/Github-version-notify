@@ -3,7 +3,7 @@ import pprint
 from collections.abc import Generator
 from functools import cache, cached_property
 from typing import Any
-
+from slackclient import SlackClient
 import github_action_utils as gha_utils  # type: ignore
 import requests
 import yaml
@@ -26,7 +26,7 @@ from .run_git import (
 from .utils import (
     add_git_diff_to_job_summary,
     get_request_headers,
-    post_msg_to_slack,
+    #post_msg_to_slack,
 )
 
 
@@ -162,6 +162,19 @@ class GitHubActionsVersionUpdater:
         start = f"* **[{action_repository}]({self.github_url}{action_repository})**"
 
         if self.user_config.update_version_with == LATEST_RELEASE_TAG:
+            
+            payload = f"{start} published a new release "
+                f"**[{version_data['tag_name']}]({version_data['html_url']})** "
+                f"on {version_data['published_at']}\n"
+                
+            slack_token = os.environ["xoxb-728460929616-4736161330145-qWsVuXJvm0rNreM1IX49DM4j"]
+            sc = SlackClient(slack_token)
+            sc.api_call(
+            "chat.postMessage",
+            channel="#version-notify",
+            text="Hello from Python! 🎉"
+            )    
+                
             return (
                 f"{start} published a new release "
                 f"**[{version_data['tag_name']}]({version_data['html_url']})** "
@@ -430,5 +443,4 @@ if __name__ == "__main__":
         )
         actions_version_updater.run()
         
-    with gha_utils.group("Post Message to Slack"):
-        post_msg_to_slack()
+    
