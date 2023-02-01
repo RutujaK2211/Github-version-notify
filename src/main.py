@@ -163,9 +163,7 @@ class GitHubActionsVersionUpdater:
 
         if self.user_config.update_version_with == LATEST_RELEASE_TAG:
             
-            payload = f"{start} published a new release "
-                f"**[{version_data['tag_name']}]({version_data['html_url']})** "
-                f"on {version_data['published_at']}\n"
+            payload = f"{start} published a new release **[{version_data['tag_name']}]({version_data['html_url']})** on {version_data['published_at']}\n"
                 
             slack_token = os.environ["xoxb-728460929616-4736161330145-qWsVuXJvm0rNreM1IX49DM4j"]
             sc = SlackClient(slack_token)
