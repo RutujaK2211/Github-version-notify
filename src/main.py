@@ -71,7 +71,7 @@ class GitHubActionsVersionUpdater:
             )
             gha_utils.append_job_summary(pull_request_body)
 
-            else:
+            
                 add_git_diff_to_job_summary()
                 gha_utils.echo(
                     "Updates found , "
